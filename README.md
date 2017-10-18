@@ -18,13 +18,13 @@ You may also need to activate `kvm` kernel module on your host machine: `modprob
 
 ## AVD detection in Gradle, Android Studio, etc.
 
-To enable autodection of this AVD, you will need to install `socat` first: `apt-get install socat`. Then just run this command to connect your local 5555 port to the AVD container:
+To make automatic detection of this AVD possible, you will need to install `socat` first: `apt-get install socat`. Then just run this command to connect your local 5555 port to the container:
 
 ```
 socat tcp-listen:5555,bind=127.0.0.1,fork tcp:IP_OF_AVD_CONTAINER:5555
 ```
 
-This is a reversed solution used earlier to publish AVD's ports to the public. While socat is running, your ADB server will be able to detect the AVD automatically (just like any Android device connected via USB).
+This is a reversed version of script used to publish AVD's ports. While socat is running, your ADB server will be able to detect AVD automatically (just like any Android device connected via USB).
 
 ### Automatic instrumentation testing example:
 

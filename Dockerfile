@@ -1,4 +1,4 @@
-FROM thedrhax/android-sdk:latest
+FROM thedrhax/android-sdk:26.0.1
 
 # x86 emulation requires hardware acceleration
 # that requires access to /dev/kvm (--device /dev/kvm)
@@ -13,16 +13,22 @@ RUN apt-get update \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists /var/cache/apt
 
-ENV ABI="x86" \
-    TARGET="android-24" \
-    NAME="Docker_AVD" \
-    EMULATOR="64-x86"
+ENV ABI="x86_64" \
+    TARGET="android-25" \
+    TAG="google_apis" \
+    NAME="Docker"
 
-RUN echo y | $ANDROID_HOME/tools/android update sdk --filter ${TARGET} --no-ui --force -a \
- && echo y | $ANDROID_HOME/tools/android update sdk --filter sys-img-${ABI}-${TARGET} --no-ui --force -a \
- && echo no | $ANDROID_HOME/tools/android create avd -t ${TARGET} -n ${NAME} --abi ${ABI} \
- && mkdir -p $ANDROID_HOME/tools/keymaps \
- && touch $ANDROID_HOME/tools/keymaps/en-us
+RUN mkdir -p ~/.android \
+ && touch ~/.android/repositories.cfg \
+ && $ANDROID_HOME/tools/bin/sdkmanager \
+        "tools" \
+        "platforms;${TARGET}" \
+        "system-images;${TARGET};${TAG};${ABI}" \
+ && echo n | $ANDROID_HOME/tools/bin/avdmanager create avd \
+        -k "system-images;${TARGET};${TAG};${ABI}" \
+        -n ${NAME} \
+        -b ${ABI} \
+        -g ${TAG}
 
 RUN mkdir -p /var/log/supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
