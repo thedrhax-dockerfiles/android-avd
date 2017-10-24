@@ -5,9 +5,6 @@ FROM thedrhax/android-sdk:26.0.1
 # that requires running as root
 USER root
 
-# ADB and terminal ports of AVD
-EXPOSE 5554 5555
-
 RUN apt-get update \
  && apt-get install -y libqt5widgets5 socat supervisor \
  && apt-get clean \
@@ -16,24 +13,18 @@ RUN apt-get update \
 ENV ABI="x86_64" \
     TARGET="android-25" \
     TAG="google_apis" \
-    NAME="Docker"
+    NAME="Docker" \
+
+    ANDROID_LOG_TAGS="e"
 
 RUN mkdir -p ~/.android \
  && touch ~/.android/repositories.cfg \
  && $ANDROID_HOME/tools/bin/sdkmanager \
         "tools" \
         "platforms;${TARGET}" \
-        "system-images;${TARGET};${TAG};${ABI}" \
- && echo n | $ANDROID_HOME/tools/bin/avdmanager create avd \
-        -k "system-images;${TARGET};${TAG};${ABI}" \
-        -n ${NAME} \
-        -b ${ABI} \
-        -g ${TAG}
+        "system-images;${TARGET};${TAG};${ABI}"
 
-RUN mkdir -p /var/log/supervisor
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY socat.sh /usr/local/bin/socat.sh
-
-ENV ANDROID_LOG_TAGS="e"
-
-CMD /usr/bin/supervisord
+ADD container /
+EXPOSE 5554 5555
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/usr/bin/supervisord"]
