@@ -34,4 +34,6 @@ RUN mkdir -p /var/log/supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY socat.sh /usr/local/bin/socat.sh
 
+ENV ANDROID_LOG_TAGS="e"
+
 CMD /usr/bin/supervisord
