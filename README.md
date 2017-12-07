@@ -5,7 +5,7 @@ This image contains the latest version of Android SDK with configured AVD.
 # Example
 
 ```bash
-docker run -it --device /dev/kvm -p 5554:5554 -p 5555:5555 thedrhax/android-avd
+docker run -it --device /dev/kvm -p 5554:5554 -p 5555:5555 --env ANDROID_EMULATOR_EXTRA_ARGS="-skin 480x800" thedrhax/android-avd
 ```
 
 The `--device /dev/kvm` flag is required to enable CPU hardware acceleration.
