@@ -39,3 +39,17 @@ gradle connectedAndroidTest
 # Kill socat process
 kill $PID
 ```
+
+### Connect to AVD via VNC
+
+You can use any VNC client to interact with Android running inside AVD. VNC server is disabled by default. To enable it, use these arguments when starting Docker container:
+
+```bash
+-e ANDROID_EMULATOR_EXTRA_ARGS="-skin 480x800 -qemu -vnc :0" -p 5900:5900
+```
+
+Full example:
+
+```bash
+docker run -it --device /dev/kvm -p 5554:5554 -p 5555:5555 -p 5900:5900 --env ANDROID_EMULATOR_EXTRA_ARGS="-skin 480x800 -qemu -vnc :0" thedrhax/android-avd:latest
+```
