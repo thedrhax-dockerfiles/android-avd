@@ -19,7 +19,7 @@ ENV ABI="x86_64" \
 
 RUN mkdir -p ~/.android \
  && touch ~/.android/repositories.cfg \
- && $ANDROID_HOME/tools/bin/sdkmanager \
+ && $ANDROID_HOME/tools/bin/sdkmanager --verbose \
         "tools" \
         "platforms;${TARGET}" \
         "system-images;${TARGET};${TAG};${ABI}"
