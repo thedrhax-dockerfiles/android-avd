@@ -11,7 +11,7 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists /var/cache/apt
 
 ENV ABI="x86_64" \
-    TARGET="android-25" \
+    TARGET="android-26" \
     TAG="google_apis" \
     NAME="Docker" \
 
