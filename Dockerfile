@@ -1,4 +1,4 @@
-FROM thedrhax/android-sdk:26.0.1
+FROM thedrhax/android-sdk:latest
 
 # x86 emulation requires hardware acceleration
 # that requires access to /dev/kvm (--device /dev/kvm)
