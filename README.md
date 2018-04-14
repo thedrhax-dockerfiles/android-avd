@@ -2,54 +2,67 @@
 
 This image contains the latest version of Android SDK with configured AVD.
 
-# Example
+## Examples
+
+* Basic usage
 
 ```bash
-docker run -it --device /dev/kvm -p 5554:5554 -p 5555:5555 --env ANDROID_EMULATOR_EXTRA_ARGS="-skin 480x800" thedrhax/android-avd
+docker run -it --rm --name avd --device /dev/kvm thedrhax/android-avd
+
+# Use ADB to interact with virtual device
+docker exec -it avd adb shell
 ```
 
-The `--device /dev/kvm` flag is required to enable CPU hardware acceleration.
-You may also need to activate `kvm` kernel module on your host machine: `modprobe kvm`, or even install it first.
-
-## Connecting to AVD from other containers/computers
-
-* `adb connect 127.0.0.1` or `adb connect IP_OF_AVD_CONTAINER`
-* `adb devices` or `adb shell`
-
-## AVD detection in Gradle, Android Studio, etc.
-
-To make automatic detection of this AVD possible, you will need to install `socat` first: `apt-get install socat`. Then just run this command to connect your local 5555 port to the container:
-
-```
-socat tcp-listen:5555,bind=127.0.0.1,fork tcp:IP_OF_AVD_CONTAINER:5555
-```
-
-This is a reversed version of script used to publish AVD's ports. While socat is running, your ADB server will be able to detect AVD automatically (just like any Android device connected via USB).
-
-### Automatic instrumentation testing example:
+* Remote ADB connection
 
 ```bash
-# Start socat in the background and remember PID of this process
-socat tcp-listen:5555,bind=127.0.0.1,fork tcp:IP_OF_AVD_CONTAINER:5555 &
-PID=$!
+docker run -it --rm --device /dev/kvm -p 5554:5554 -p 5555:5555 thedrhax/android-avd
 
-# Run automated instrumentation tests with Gradle
+# Connect local ADB process to AVD (not required if both are on localhost)
+adb connect IP_OF_AVD_CONTAINER_OR_HOST
+
+# Use ADB to interact with virtual device
+adb shell
+```
+
+* Automated instrumentation testing via Gradle, Android Studio, etc.
+
+```bash
+# Install socat
+sudo apt-get install socat
+
+# Bind container's port 5555 to localhost
+socat tcp-listen:5555,bind=127.0.0.1,fork tcp:IP_OF_AVD_CONTAINER:5555 & PID=$!
+
+# Run Gradle tests
 gradle connectedAndroidTest
+# or use ADB without connecting to remote AVD
+adb shell
+# or just use AVD in Android Studio
 
-# Kill socat process
+# Kill socat
 kill $PID
 ```
 
-### Connect to AVD via VNC
-
-You can use any VNC client to interact with Android running inside AVD. VNC server is disabled by default. To enable it, use these arguments when starting Docker container:
+* Interact with AVD via VNC
 
 ```bash
--e ANDROID_EMULATOR_EXTRA_ARGS="-skin 480x800 -qemu -vnc :0" -p 5900:5900
+docker run -it --device /dev/kvm -p 5900:5900 thedrhax/android-avd
+
+# Use any VNC client to connect to localhost:5900, for example:
+ssvncviewer localhost:5900
 ```
 
-Full example:
+* Interact with AVD via noVNC (HTML5 VNC client)
 
 ```bash
-docker run -it --device /dev/kvm -p 5554:5554 -p 5555:5555 -p 5900:5900 --env ANDROID_EMULATOR_EXTRA_ARGS="-skin 480x800 -qemu -vnc :0" thedrhax/android-avd:latest
+docker run -it --device /dev/kvm --env noVNC=true -p 6080:6080 thedrhax/android-avd
+
+# Open http://localhost:6080/vnc.html in your browser
+xdg-open http://localhost:6080/vnc.html
 ```
+
+----
+
+Note: `--device /dev/kvm` flag is required to enable CPU hardware acceleration.
+You may also need to activate `kvm` kernel module on your host machine: `modprobe kvm`, or even install it first.

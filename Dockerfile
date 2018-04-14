@@ -6,7 +6,7 @@ FROM thedrhax/android-sdk:26.0.1
 USER root
 
 RUN apt-get update \
- && apt-get install -y libqt5widgets5 socat supervisor \
+ && apt-get install -y libqt5widgets5 socat supervisor net-tools \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists /var/cache/apt
 
@@ -15,7 +15,13 @@ ENV ABI="x86_64" \
     TAG="google_apis" \
     NAME="Docker" \
 
-    ANDROID_LOG_TAGS="e"
+    ANDROID_LOG_TAGS="e" \
+
+    # Argument `-qemu -vnc :0` is required for VNC and noVNC to work
+    # You can still override this variable: just add this argument to the end
+    ANDROID_EMULATOR_EXTRA_ARGS="-skin 480x800 -qemu -vnc :0" \
+
+    noVNC="false"
 
 RUN mkdir -p ~/.android \
  && touch ~/.android/repositories.cfg \
@@ -23,6 +29,11 @@ RUN mkdir -p ~/.android \
         "tools" \
         "platforms;${TARGET}" \
         "system-images;${TARGET};${TAG};${ABI}"
+
+RUN git clone https://github.com/novnc/noVNC.git \
+ && cd noVNC \
+ && git checkout v0.6.2 \
+ && git clone https://github.com/novnc/websockify.git utils/websockify
 
 ADD container /
 EXPOSE 5554 5555
