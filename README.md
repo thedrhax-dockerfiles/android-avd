@@ -2,6 +2,11 @@
 
 This image contains the latest version of Android SDK with configured AVD.
 
+## Supported tags and respective `Dockerfile` links
+
+- [`26`, `latest` (*master/Dockerfile*)](https://github.com/thedrhax-dockerfiles/android-avd/blob/master/Dockerfile)
+- [`25` (*25/Dockerfile*)](https://github.com/thedrhax-dockerfiles/android-avd/blob/25/Dockerfile)
+
 ## Examples
 
 * Basic usage
