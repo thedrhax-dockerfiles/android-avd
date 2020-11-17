@@ -1,4 +1,4 @@
-FROM thedrhax/android-sdk:latest
+FROM thedrhax/android-sdk:6609375-6.7
 
 # x86 emulation requires hardware acceleration
 # that requires access to /dev/kvm (--device /dev/kvm)
@@ -14,18 +14,15 @@ ENV ABI="x86_64" \
     TARGET="android-26" \
     TAG="google_apis" \
     NAME="Docker" \
-
     ANDROID_LOG_TAGS="e" \
-
-    # Argument `-qemu -vnc :0` is required for VNC and noVNC to work
+    # Argument `-gpu guest -qemu -vnc :0` is required for VNC and noVNC to work
     # You can still override this variable: just add this argument to the end
-    ANDROID_EMULATOR_EXTRA_ARGS="-skin 480x800 -qemu -vnc :0" \
-
+    ANDROID_EMULATOR_EXTRA_ARGS="-skin 480x800 -gpu guest -qemu -vnc :0" \
     noVNC="false"
 
 RUN mkdir -p ~/.android \
  && touch ~/.android/repositories.cfg \
- && $ANDROID_HOME/tools/bin/sdkmanager --verbose \
+ && $ANDROID_SDK_ROOT/cmdline-tools/tools/bin/sdkmanager --verbose \
         "tools" \
         "platforms;${TARGET}" \
         "system-images;${TARGET};${TAG};${ABI}"
